@@ -13,6 +13,7 @@ const Clients = React.lazy(() => import('../pages/Clients'));
 const Settings = React.lazy(() => import('../pages/Settings'));
 const Security = React.lazy(() => import('../pages/Security'));
 const Login = React.lazy(() => import('../pages/Login'));
+const Signup = React.lazy(() => import('../pages/Signup'));
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
@@ -23,6 +24,7 @@ export default function AppRoutes() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
+        <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route
           path="/"
@@ -32,6 +34,9 @@ export default function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        {/* Redirect /dashboard to the root path (/) if accessed directly */}
+        <Route path="/dashboard" element={<Navigate to="/" replace />} />
+
         <Route path="/financial" element={<ProtectedRoute><Financial /></ProtectedRoute>} />
         <Route path="/marketing" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
         <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
