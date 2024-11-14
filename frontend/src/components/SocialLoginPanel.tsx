@@ -1,13 +1,14 @@
-import React from 'react';
-import { Facebook, Instagram, Linkedin, Twitter, TikTok } from 'lucide-react';
-import { FaTiktok } from 'react-icons/fa';
+// SocialLoginPanel.tsx
 
+import React from 'react';
+import { Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { FaTiktok } from 'react-icons/fa';
 
 const socialPlatforms = [
   { name: 'Facebook', icon: Facebook, color: 'bg-blue-600' },
   { name: 'Instagram', icon: Instagram, color: 'bg-pink-600' },
   { name: 'LinkedIn', icon: Linkedin, color: 'bg-blue-700' },
-  { name: 'Twitter', icon: Twitter, color: 'bg-blue-400' }
+  { name: 'Twitter', icon: Twitter, color: 'bg-blue-400' },
   { name: 'TikTok', icon: FaTiktok, color: 'bg-blue-400' }
 ];
 

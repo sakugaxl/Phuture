@@ -1,6 +1,9 @@
+// AuthContext.tsx
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   getAuth,
+  setPersistence,
+  browserLocalPersistence,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
@@ -32,11 +35,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const db = getFirestore();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setIsAuthenticated(!!user);
-    });
-    return () => unsubscribe();
+    setPersistence(auth, browserLocalPersistence)
+      .then(() => {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          setUser(user);
+          setIsAuthenticated(!!user);
+        });
+        return () => unsubscribe();
+      })
+      .catch((error) => {
+        console.error('Error setting persistence:', error);
+      });
   }, [auth]);
 
   const login = async (email: string, password: string) => {
@@ -53,12 +62,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Save username to Firestore
       await setDoc(doc(db, 'users', user.uid), {
         email: user.email,
         username,
       });
-      
+
       setUser(user);
       setIsAuthenticated(true);
     } catch (error) {

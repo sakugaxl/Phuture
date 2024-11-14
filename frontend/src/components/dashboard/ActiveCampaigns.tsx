@@ -1,3 +1,5 @@
+// ActiveCampaigns.tsx
+
 import React, { useEffect, useState } from 'react';
 import { Play, Pause, BarChart3, Settings, Facebook, Instagram, TikTok, Linkedin } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';

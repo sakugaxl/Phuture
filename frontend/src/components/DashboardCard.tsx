@@ -1,3 +1,5 @@
+// DashboardCard.tsx
+
 import React from 'react';
 
 interface DashboardCardProps {

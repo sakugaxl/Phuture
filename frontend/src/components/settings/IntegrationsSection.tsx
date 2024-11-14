@@ -12,25 +12,11 @@ function openAuthPopup(url: string) {
 }
 
 // Integration connection functions
-function handleInstagramConnect() {
-  openAuthPopup('http://localhost:5000/auth/instagram');
-}
-
-function handleFacebookConnect() {
-  openAuthPopup('http://localhost:5000/auth/facebook');
-}
-
-function handleLinkedInConnect() {
-  openAuthPopup('http://localhost:5000/auth/linkedin');
-}
-
-function handleTwitterConnect() {
-  openAuthPopup('http://localhost:5000/auth/twitter');
-}
-
-function handleTikTokConnect() {
-  openAuthPopup('http://localhost:5000/auth/tiktok');
-}
+const handleInstagramConnect = () => openAuthPopup('http://localhost:5000/auth/instagram');
+const handleFacebookConnect = () => openAuthPopup('http://localhost:5000/auth/facebook');
+const handleLinkedInConnect = () => openAuthPopup('http://localhost:5000/auth/linkedin');
+const handleTwitterConnect = () => openAuthPopup('http://localhost:5000/auth/twitter');
+const handleTikTokConnect = () => openAuthPopup('http://localhost:5000/auth/tiktok');
 
 // Initial integrations data
 const integrations = [
@@ -59,21 +45,32 @@ const statusColors = {
 };
 
 export default function IntegrationsSection() {
-  const [statuses, setStatuses] = useState({ instagram: 'not-connected' });
+  const [statuses, setStatuses] = useState({
+    facebook: 'not-connected',
+    instagram: 'not-connected',
+    linkedin: 'not-connected',
+    twitter: 'not-connected',
+    tiktok: 'not-connected'
+  });
 
   useEffect(() => {
     // Function to check the connection status for all platforms
-    const checkStatus = async () => {
+    const checkStatus = async (platform: string) => {
       try {
-        const response = await axios.get('http://localhost:5000/auth/instagram/status');
+        const response = await axios.get(`http://localhost:5000/auth/${platform}/status`, {
+          params: { userId: 'currentUserId' } // Add logic to retrieve or manage userId as needed
+        });
         if (response.data.isConnected) {
-          setStatuses(prev => ({ ...prev, instagram: 'connected' }));
+          setStatuses((prev) => ({ ...prev, [platform]: 'connected' }));
         }
       } catch (error) {
-        console.error("Error checking Instagram status:", error);
+        console.error(`Error checking ${platform} status:`, error);
       }
     };
-    checkStatus();
+
+    // Check connection status for each platform
+    const platforms = ['facebook', 'instagram', 'linkedin', 'twitter', 'tiktok'];
+    platforms.forEach(platform => checkStatus(platform));
   }, []);
 
   return (

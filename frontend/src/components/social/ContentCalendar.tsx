@@ -17,7 +17,7 @@ const scheduledPosts = [
     scheduledFor: '2024-03-21 2:00 PM',
     type: 'carousel',
     status: 'draft'
-  }
+  },
   {
     id: 3,
     title: 'Success Story',

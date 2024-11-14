@@ -1,3 +1,4 @@
+// Sidebar.tsx
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { 
@@ -24,7 +25,6 @@ const menuItems = [
   { icon: Brain, label: 'AI Insights', path: '/insights' },
   { icon: Share2, label: 'Social Media', path: '/social' },
   { icon: DollarSign, label: 'Financial Overview', path: '/financial' },
-  { icon: Users, label: 'Client Portal', path: '/clients' },
   { icon: Settings, label: 'Settings', path: '/settings' },
   { icon: Shield, label: 'Security', path: '/security' }
 ];

@@ -1,3 +1,5 @@
+// api.ts
+
 const API_BASE_URL = import.meta.env.PROD 
   ? import.meta.env.VITE_API_URL || '/api'
   : '/api';
@@ -5,6 +7,7 @@ const API_BASE_URL = import.meta.env.PROD
 class ApiService {
   readonly baseUrl = API_BASE_URL;
 
+  // Function to fetch data with authorization token
   private async fetchWithAuth(url: string, options: RequestInit = {}): Promise<Response> {
     const token = localStorage.getItem('auth_token');
     const headers = {
@@ -18,12 +21,14 @@ class ApiService {
       headers,
     });
 
+    // Redirect to login if unauthorized
     if (response.status === 401) {
       localStorage.removeItem('auth_token');
       window.location.href = '/login';
       throw new Error('Unauthorized');
     }
 
+    // Handle non-OK responses
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -31,6 +36,7 @@ class ApiService {
     return response;
   }
 
+  // Fetch analytics data
   async getAnalytics(): Promise<AnalyticsResponse> {
     try {
       const response = await this.fetchWithAuth('/analytics');
@@ -42,6 +48,7 @@ class ApiService {
     }
   }
 
+  // Fetch marketing campaigns data
   async getCampaigns(): Promise<Campaign[]> {
     try {
       const response = await this.fetchWithAuth('/campaigns');
@@ -53,20 +60,25 @@ class ApiService {
     }
   }
 
-  async getSocialInsights(): Promise<SocialInsights> {
+  // Fetch Instagram insights
+  async getSocialInsights(): Promise<any> {
     try {
-      const response = await this.fetchWithAuth('/social/insights');
+      const response = await this.fetchWithAuth(`/auth/instagram/insights?metric=impressions,reach,profile_views&period=day&metric_type=total_value`);
       const data = await response.json();
-      return data;
+      return {
+        impressions: data.data.find((metric: any) => metric.name === 'impressions')?.total_value?.value || 0,
+        reach: data.data.find((metric: any) => metric.name === 'reach')?.total_value?.value || 0,
+        profile_views: data.data.find((metric: any) => metric.name === 'profile_views')?.total_value?.value || 0,
+        // Add more metrics here as needed
+      };
     } catch (error) {
       console.error('Error fetching social insights:', error);
       throw new Error('Failed to fetch social insights');
     }
   }
-
-  // Add more API methods as needed
 }
 
+// Interfaces for data structure
 export interface AnalyticsResponse {
   metrics: {
     totalRevenue: number;

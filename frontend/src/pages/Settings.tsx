@@ -1,3 +1,5 @@
+// Settings.tsx
+
 import React from 'react';
 import { Settings as SettingsIcon, Bell, Link, Palette } from 'lucide-react';
 import ProfileSection from '../components/settings/ProfileSection';

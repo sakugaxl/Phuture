@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+// Social.tsx
+
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Share2, Users, MessageSquare, ChevronDown, ChevronUp, Calendar, BarChart3 } from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import SocialLoginPanel from '../components/SocialLoginPanel';
@@ -12,6 +15,22 @@ export default function Social() {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isEngagementVisible, setIsEngagementVisible] = useState(true);
   const [isAudienceVisible, setIsAudienceVisible] = useState(true);
+  const [metrics, setMetrics] = useState({ followerCount: null, reach: null, impressions: null });
+
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const response = await axios.get('/auth/instagram/metrics', {
+          params: { userId: 'currentUserId' } // Replace with actual user ID logic
+        });
+        setMetrics(response.data);
+      } catch (error) {
+        console.error('Error fetching Instagram metrics:', error);
+      }
+    };
+
+    fetchMetrics();
+  }, []);
 
   return (
     <>
@@ -23,19 +42,19 @@ export default function Social() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <DashboardCard
           title="Total Followers"
-          value="24.5K"
+          value={metrics.followerCount !== null ? `${metrics.followerCount}` : 'Loading...'}
           icon={<Users className="text-blue-500" />}
           trend={{ value: 5.2, isPositive: true }}
         />
         <DashboardCard
-          title="Engagement Rate"
-          value="4.8%"
+          title="Reach"
+          value={metrics.reach !== null ? `${metrics.reach}` : 'Loading...'}
           icon={<Share2 className="text-purple-500" />}
           trend={{ value: 0.5, isPositive: true }}
         />
         <DashboardCard
-          title="Total Posts"
-          value="128"
+          title="Impressions"
+          value={metrics.impressions !== null ? `${metrics.impressions}` : 'Loading...'}
           icon={<MessageSquare className="text-green-500" />}
           trend={{ value: 12, isPositive: true }}
         />
