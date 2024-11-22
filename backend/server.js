@@ -11,18 +11,20 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000" }));
-app.use(express.json());
-
-// Import Routes
+// Routes
 const authRoutes = require("./routes/auth");
 const insightsRoutes = require("./routes/insights");
-// const adCampaignRoutes = require("./routes/adCampaigns");
-// const uploadRoutes = require("./routes/uploads");
+const adCampaignRoutes = require("./routes/adCampaigns");
+const uploadRoutes = require("./routes/uploads");
+
+app.use(cors({ origin: "http://localhost:3000" }));
+app.use(express.json());
 
 // Use Routes
 app.use("/auth", authRoutes);
 app.use("/api/insights", insightsRoutes);
+app.use("/api/ad-campaigns", adCampaignRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 // Root Route
 app.get("/", (req, res) => {
