@@ -1,5 +1,3 @@
-// api.ts
-
 const API_BASE_URL = import.meta.env.PROD 
   ? import.meta.env.VITE_API_URL || '/api'
   : '/api';
@@ -21,15 +19,15 @@ class ApiService {
       headers,
     });
 
-    // Redirect to login if unauthorized
     if (response.status === 401) {
       localStorage.removeItem('auth_token');
       window.location.href = '/login';
       throw new Error('Unauthorized');
     }
 
-    // Handle non-OK responses
     if (!response.ok) {
+      const errorDetails = await response.json();
+      console.error('Error response:', errorDetails);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
@@ -63,13 +61,17 @@ class ApiService {
   // Fetch Instagram insights
   async getSocialInsights(): Promise<any> {
     try {
-      const response = await this.fetchWithAuth(`/auth/instagram/insights?metric=impressions,reach,profile_views&period=day&metric_type=total_value`);
+      const response = await this.fetchWithAuth('/auth/instagram/insights', {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json',
+        },
+      });
       const data = await response.json();
       return {
         impressions: data.data.find((metric: any) => metric.name === 'impressions')?.total_value?.value || 0,
         reach: data.data.find((metric: any) => metric.name === 'reach')?.total_value?.value || 0,
         profile_views: data.data.find((metric: any) => metric.name === 'profile_views')?.total_value?.value || 0,
-        // Add more metrics here as needed
       };
     } catch (error) {
       console.error('Error fetching social insights:', error);

@@ -3,7 +3,12 @@ import { Facebook, Instagram, Linkedin, Twitter, Database, BarChart, Settings2, 
 import { FaTiktok } from 'react-icons/fa';
 import axios from 'axios';
 
-// Popup window function for opening authentication URLs
+const handleInstagramConnect = () => openAuthPopup('https://panel.phuturesync.co.za/auth/instagram');
+const handleFacebookConnect = () => openAuthPopup('https://panel.phuturesync.co.za/auth/facebook');
+const handleLinkedInConnect = () => openAuthPopup('https://panel.phuturesync.co.za/auth/linkedin');
+const handleTwitterConnect = () => openAuthPopup('https://panel.phuturesync.co.za/auth/twitter');
+const handleTikTokConnect = () => openAuthPopup('https://panel.phuturesync.co.za/auth/tiktok');
+
 function openAuthPopup(url: string) {
   const popup = window.open(url, '_blank', 'width=600,height=600');
   if (popup) {
@@ -11,14 +16,6 @@ function openAuthPopup(url: string) {
   }
 }
 
-// Integration connection functions
-const handleInstagramConnect = () => openAuthPopup('http://localhost:5000/auth/instagram');
-const handleFacebookConnect = () => openAuthPopup('http://localhost:5000/auth/facebook');
-const handleLinkedInConnect = () => openAuthPopup('http://localhost:5000/auth/linkedin');
-const handleTwitterConnect = () => openAuthPopup('http://localhost:5000/auth/twitter');
-const handleTikTokConnect = () => openAuthPopup('http://localhost:5000/auth/tiktok');
-
-// Initial integrations data
 const integrations = [
   {
     category: 'Social Media',
@@ -54,11 +51,10 @@ export default function IntegrationsSection() {
   });
 
   useEffect(() => {
-    // Function to check the connection status for all platforms
     const checkStatus = async (platform: string) => {
       try {
-        const response = await axios.get(`http://localhost:5000/auth/${platform}/status`, {
-          params: { userId: 'currentUserId' } // Add logic to retrieve or manage userId as needed
+        const response = await axios.get(`https://panel.phuturesync.co.za/auth/${platform}/status`, {
+          params: { userId: 'currentUserId' }
         });
         if (response.data.isConnected) {
           setStatuses((prev) => ({ ...prev, [platform]: 'connected' }));
@@ -68,7 +64,6 @@ export default function IntegrationsSection() {
       }
     };
 
-    // Check connection status for each platform
     const platforms = ['facebook', 'instagram', 'linkedin', 'twitter', 'tiktok'];
     platforms.forEach(platform => checkStatus(platform));
   }, []);

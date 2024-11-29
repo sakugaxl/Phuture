@@ -1,12 +1,21 @@
-const axios = require("axios");
+const axios = require('axios');
 
-const getInsights = async (accessToken) => {
+/**
+ * Fetch Instagram insights.
+ * 
+ * @param {string} accessToken - Instagram Graph API access token.
+ * @param {object} options - Optional query parameters (e.g., since, until).
+ * @returns {object} Insights data from Instagram API.
+ */
+const getInsights = async (accessToken, options = {}) => {
   try {
-    const url = `https://graph.instagram.com/me/insights`;
+    const url = `https://graph.instagram.com/v14.0/me/insights`;
     const params = {
-      metric: "follower_count,reach,impressions,profile_views,website_clicks",
+      metric: "follower_count,reach,impressions,profile_views,website_clicks", // Example metrics
       access_token: accessToken,
+      ...options, // Optional parameters
     };
+
     const response = await axios.get(url, { params });
     return response.data;
   } catch (error) {
