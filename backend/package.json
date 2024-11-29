@@ -1,6 +1,11 @@
-{ 
+{
+  "name": "phuture-backend",
+  "version": "1.0.0",
+  "main": "server.js",
   "scripts": {
-    "dev":"node server.js"
+    "dev": "node server.js",
+    "build": "echo 'No build step required for backend'",
+    "start": "node server.js"
   },
   "dependencies": {
     "axios": "^1.7.7",
