@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../main';
+import { useState } from 'react';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../services/firebaseConfig'; // Corrected path to firebaseConfig
 
 const LoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -43,10 +43,14 @@ const LoginForm: React.FC = () => {
         />
         <label className="text-sm">Remember Me</label>
       </div>
-      <button onClick={handleLogin} className="btn btn-primary w-full">Log In</button>
+      <button onClick={handleLogin} className="btn btn-primary w-full">
+        Log In
+      </button>
       <p className="mt-4 text-center">
         Don’t have an account?{' '}
-        <a href="/signup" className="text-blue-500 hover:underline">Sign Up</a>
+        <a href="/signup" className="text-blue-500 hover:underline">
+          Sign Up
+        </a>
       </p>
     </div>
   );

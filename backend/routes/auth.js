@@ -3,6 +3,27 @@ const axios = require("axios");
 const router = express.Router();
 const { db } = require("../utils/firebase");
 
+// Helper to handle long-lived tokens
+async function exchangeForLongLivedToken(accessToken, appId, appSecret) {
+  try {
+    const response = await axios.get(
+      `https://graph.facebook.com/v14.0/oauth/access_token`,
+      {
+        params: {
+          grant_type: "fb_exchange_token",
+          client_id: appId,
+          client_secret: appSecret,
+          fb_exchange_token: accessToken,
+        },
+      }
+    );
+    return response.data.access_token;
+  } catch (error) {
+    console.error("Error exchanging for long-lived token:", error.response?.data || error.message);
+    throw error;
+  }
+}
+
 // Google AdSense OAuth Route
 router.get("/googleAdsense", (req, res) => {
   const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } = process.env;
@@ -15,7 +36,8 @@ router.get("/googleAdsense/callback", async (req, res) => {
   const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = process.env;
 
   try {
-    const response = await axios.post(`https://oauth2.googleapis.com/token`, {
+    // Step 1: Exchange the code for an access token
+    const tokenResponse = await axios.post(`https://oauth2.googleapis.com/token`, {
       client_id: GOOGLE_CLIENT_ID,
       client_secret: GOOGLE_CLIENT_SECRET,
       grant_type: "authorization_code",
@@ -23,21 +45,37 @@ router.get("/googleAdsense/callback", async (req, res) => {
       code,
     });
 
-    const { access_token } = response.data;
+    const { access_token } = tokenResponse.data;
+
+    // Step 2: Fetch AdSense accounts
+    const accountsResponse = await axios.get(`https://adsense.googleapis.com/v2/accounts`, {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+      },
+    });
+
+    const accounts = accountsResponse.data.accounts || [];
+
+    // Step 3: Store access token and accounts in Firestore
     const userId = req.query.userId || "testUserId";
 
     await db.collection("users").doc(userId).set(
       {
         socialAccounts: {
-          googleAdsense: { connected: true, accessToken: access_token },
+          googleAdsense: {
+            connected: true,
+            accessToken: access_token,
+            accounts,
+          },
         },
       },
       { merge: true }
     );
 
-    res.redirect("http://localhost:3000/settings/integrations?connected=googleAdsense");
+    // Redirect back to the frontend with a success parameter
+    res.redirect("/settings?connected=googleAdsense");
   } catch (error) {
-    console.error("Error connecting to Google AdSense:", error);
+    console.error("Error connecting to Google AdSense:", error.response?.data || error.message);
     res.status(500).send("Error connecting to Google AdSense");
   }
 });
@@ -54,30 +92,54 @@ router.get("/facebook/callback", async (req, res) => {
   const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_REDIRECT_URI } = process.env;
 
   try {
-    const response = await axios.get(`https://graph.facebook.com/v14.0/oauth/access_token`, {
-      params: {
-        client_id: FACEBOOK_APP_ID,
-        client_secret: FACEBOOK_APP_SECRET,
-        redirect_uri: FACEBOOK_REDIRECT_URI,
-        code,
-      },
-    });
+    const tokenResponse = await axios.get(
+      `https://graph.facebook.com/v14.0/oauth/access_token`,
+      {
+        params: {
+          client_id: FACEBOOK_APP_ID,
+          client_secret: FACEBOOK_APP_SECRET,
+          redirect_uri: FACEBOOK_REDIRECT_URI,
+          code,
+        },
+      }
+    );
 
-    const { access_token } = response.data;
+    const { access_token } = tokenResponse.data;
+
+    const longLivedToken = await exchangeForLongLivedToken(
+      access_token,
+      FACEBOOK_APP_ID,
+      FACEBOOK_APP_SECRET
+    );
+
+    const accountsResponse = await axios.get(
+      `https://graph.facebook.com/v14.0/me/accounts`,
+      {
+        headers: {
+          Authorization: `Bearer ${longLivedToken}`,
+        },
+      }
+    );
+
+    const accounts = accountsResponse.data.data;
+
     const userId = req.query.userId || "testUserId";
-
     await db.collection("users").doc(userId).set(
       {
         socialAccounts: {
-          facebook: { connected: true, accessToken: access_token },
+          facebook: {
+            connected: true,
+            accessToken: longLivedToken,
+            accounts,
+          },
         },
       },
       { merge: true }
     );
 
-    res.redirect("http://localhost:3000/settings/integrations?connected=facebook");
+    res.redirect("/settings?connected=facebook");
   } catch (error) {
-    console.error("Error connecting to Facebook:", error);
+    console.error("Error connecting to Facebook:", error.response?.data || error.message);
     res.status(500).send("Error connecting to Facebook");
   }
 });
@@ -94,7 +156,7 @@ router.get("/instagram/callback", async (req, res) => {
   const { INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI } = process.env;
 
   try {
-    const response = await axios.post(`https://api.instagram.com/oauth/access_token`, {
+    const tokenResponse = await axios.post(`https://api.instagram.com/oauth/access_token`, {
       client_id: INSTAGRAM_APP_ID,
       client_secret: INSTAGRAM_APP_SECRET,
       grant_type: "authorization_code",
@@ -102,21 +164,22 @@ router.get("/instagram/callback", async (req, res) => {
       code,
     });
 
-    const { access_token } = response.data;
+    const { access_token, user_id } = tokenResponse.data;
+
     const userId = req.query.userId || "testUserId";
 
     await db.collection("users").doc(userId).set(
       {
         socialAccounts: {
-          instagram: { connected: true, accessToken: access_token },
+          instagram: { connected: true, accessToken: access_token, userId: user_id },
         },
       },
       { merge: true }
     );
 
-    res.redirect("http://localhost:3000/settings/integrations?connected=instagram");
+    res.redirect("/settings?connected=instagram");
   } catch (error) {
-    console.error("Error connecting to Instagram:", error);
+    console.error("Error connecting to Instagram:", error.response?.data || error.message);
     res.status(500).send("Error connecting to Instagram");
   }
 });

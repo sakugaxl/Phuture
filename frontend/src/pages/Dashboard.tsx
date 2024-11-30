@@ -1,28 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   TrendingUp, 
   DollarSign, 
   Users, 
-  Brain,
-  BarChart3,
-  Activity,
-  ChevronDown,
-  ChevronUp,
-  AlertCircle,
-  CheckCircle,
-  ArrowUpRight
+  Activity, 
+  ChevronDown, 
+  ChevronUp, 
+  ArrowUpRight 
 } from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import PerformanceChart from '../components/dashboard/PerformanceChart';
 import RecommendationsPanel from '../components/dashboard/RecommendationsPanel';
 import ActiveCampaigns from '../components/dashboard/ActiveCampaigns';
 import TopPerformers from '../components/dashboard/TopPerformers';
+import { fetchAnalyticsData } from '../services/api';
 
 export default function Dashboard() {
+  const [analytics, setAnalytics] = useState<any>(null);
   const [isPerformanceVisible, setIsPerformanceVisible] = useState(true);
   const [isRecommendationsVisible, setIsRecommendationsVisible] = useState(true);
   const [isCampaignsVisible, setIsCampaignsVisible] = useState(true);
   const [isTopPerformersVisible, setIsTopPerformersVisible] = useState(true);
+
+  useEffect(() => {
+    const loadAnalytics = async () => {
+      try {
+        const data = await fetchAnalyticsData();
+        setAnalytics(data);
+      } catch (error) {
+        console.error('Failed to fetch analytics data:', error);
+      }
+    };
+    loadAnalytics();
+  }, []);
+
+  if (!analytics) {
+    return <p className="text-center text-gray-500">Loading analytics...</p>;
+  }
 
   return (
     <>
@@ -42,27 +56,27 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardCard
           title="Total Revenue"
-          value="R 125,430"
+          value={`R ${analytics.metrics.totalRevenue.toLocaleString()}`}
           icon={<DollarSign className="text-green-500" />}
-          trend={{ value: 12.5, isPositive: true }}
+          trend={analytics.trends.revenue}
         />
         <DashboardCard
           title="Active Campaigns"
-          value="8"
+          value={analytics.metrics.activeCampaigns}
           icon={<TrendingUp className="text-blue-500" />}
-          trend={{ value: 5, isPositive: true }}
+          trend={analytics.trends.campaigns}
         />
         <DashboardCard
           title="New Clients"
-          value="24"
+          value={analytics.metrics.newClients}
           icon={<Users className="text-purple-500" />}
-          trend={{ value: 8, isPositive: true }}
+          trend={analytics.trends.clients}
         />
         <DashboardCard
           title="Engagement Rate"
-          value="4.8%"
+          value={`${analytics.metrics.engagementRate}%`}
           icon={<Activity className="text-orange-500" />}
-          trend={{ value: 0.5, isPositive: true }}
+          trend={analytics.trends.engagement}
         />
       </div>
 

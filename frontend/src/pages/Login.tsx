@@ -1,5 +1,3 @@
-// Login.tsx
-
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -18,7 +16,7 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate('/settings'); // Redirect to Settings instead of Dashboard
     } catch (error: any) {
       setError("Login failed. Please check your credentials.");
     }
@@ -27,7 +25,7 @@ const Login: React.FC = () => {
   const handleGoogleLogin = async () => {
     try {
       await loginWithGoogle();
-      navigate('/dashboard');
+      navigate('/settings'); // Redirect to Settings instead of Dashboard
     } catch (error) {
       setError("Google login failed. Please try again.");
     }
@@ -36,7 +34,7 @@ const Login: React.FC = () => {
   const handleAppleLogin = async () => {
     try {
       await loginWithApple();
-      navigate('/dashboard');
+      navigate('/settings'); // Redirect to Settings instead of Dashboard
     } catch (error) {
       setError("Apple login failed. Please try again.");
     }

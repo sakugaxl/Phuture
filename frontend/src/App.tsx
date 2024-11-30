@@ -12,12 +12,16 @@ function App() {
       <Router>
         <div className="flex min-h-screen bg-gray-50">
           {isSidebarOpen && (
-            <div 
+            <div
               className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          <div className={`fixed inset-y-0 left-0 z-30 transform lg:relative lg:translate-x-0 transition duration-300 ease-in-out ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+          <div
+            className={`fixed inset-y-0 left-0 z-30 transform lg:relative lg:translate-x-0 transition duration-300 ease-in-out ${
+              isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+            }`}
+          >
             <Sidebar onClose={() => setIsSidebarOpen(false)} />
           </div>
 
@@ -28,12 +32,22 @@ function App() {
                 className="p-2 rounded-md hover:bg-gray-100"
                 aria-label="Open menu"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               </button>
             </div>
-            
+
             <div className="p-4 sm:p-6 lg:p-8">
               <div className="max-w-7xl mx-auto">
                 <AppRoutes />

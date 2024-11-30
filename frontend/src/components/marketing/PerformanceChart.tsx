@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   AreaChart,
   Area,
@@ -26,8 +25,16 @@ export default function PerformanceChart() {
         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
           <defs>
             <linearGradient id="colorReach" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1}/>
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="colorEngagement" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="colorConversions" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.1} />
+              <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -43,9 +50,26 @@ export default function PerformanceChart() {
           <Area
             type="monotone"
             dataKey="reach"
+            name="Reach"
             stroke="#3B82F6"
             fillOpacity={1}
             fill="url(#colorReach)"
+          />
+          <Area
+            type="monotone"
+            dataKey="engagement"
+            name="Engagement"
+            stroke="#8B5CF6"
+            fillOpacity={1}
+            fill="url(#colorEngagement)"
+          />
+          <Area
+            type="monotone"
+            dataKey="conversions"
+            name="Conversions"
+            stroke="#10B981"
+            fillOpacity={1}
+            fill="url(#colorConversions)"
           />
         </AreaChart>
       </ResponsiveContainer>

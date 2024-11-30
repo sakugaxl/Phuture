@@ -1,4 +1,3 @@
-import React from 'react';
 import { Calendar, Filter } from 'lucide-react';
 
 interface MarketingFiltersProps {
@@ -20,7 +19,7 @@ const platforms = [
 ];
 
 const statuses = [
-  { value: 'all', label: 'All Status' },
+  { value: 'all', label: 'All Statuses' },
   { value: 'active', label: 'Active' },
   { value: 'paused', label: 'Paused' },
   { value: 'completed', label: 'Completed' },
@@ -43,6 +42,7 @@ export default function MarketingFilters({
 }: MarketingFiltersProps) {
   return (
     <div className="flex flex-wrap gap-4">
+      {/* Timeframe Filter */}
       <div className="flex items-center space-x-2">
         <Calendar size={20} className="text-gray-500" />
         <select
@@ -58,6 +58,7 @@ export default function MarketingFilters({
         </select>
       </div>
 
+      {/* Platform Filter */}
       <div className="flex items-center space-x-2">
         <Filter size={20} className="text-gray-500" />
         <select
@@ -73,6 +74,7 @@ export default function MarketingFilters({
         </select>
       </div>
 
+      {/* Status Filter */}
       <div className="flex items-center space-x-2">
         <select
           value={status}

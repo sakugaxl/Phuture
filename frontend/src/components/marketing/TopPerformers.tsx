@@ -1,4 +1,3 @@
-import React from 'react';
 import { TrendingUp, Users, DollarSign } from 'lucide-react';
 
 const topPosts = [
@@ -6,37 +5,27 @@ const topPosts = [
     id: 1,
     title: 'Summer Collection Launch',
     platform: 'Instagram',
-    reach: '15.2K',
-    engagement: '2.8K',
-    roi: '3.2x',
+    reach: 15200,
+    engagement: 2800,
+    roi: 3.2,
   },
   {
     id: 2,
     title: 'Flash Sale Announcement',
     platform: 'Facebook',
-    reach: '12.5K',
-    engagement: '1.9K',
-    roi: '2.8x',
-  },
-  {
-    id: 3,
-    title: 'Product Showcase',
-    platform: 'LinkedIn',
-    reach: '8.7K',
-    engagement: '1.2K',
-    roi: '2.1x',
-  },
-  {
-    id: 4,
-    title: 'Product Showcase',
-    platform: 'TikTok',
-    reach: '8.7K',
-    engagement: '1.2K',
-    roi: '2.1x',
+    reach: 12500,
+    engagement: 1900,
+    roi: 2.8,
   },
 ];
 
 export default function TopPerformers() {
+  const formatNumber = (value: number): string =>
+    value >= 1000 ? `${(value / 1000).toFixed(1)}K` : value.toString();
+
+  const formatROI = (value: number): string =>
+    value >= 2 ? 'text-green-600' : value >= 1 ? 'text-yellow-600' : 'text-red-600';
+
   return (
     <div className="space-y-4">
       {topPosts.map((post) => (
@@ -49,29 +38,31 @@ export default function TopPerformers() {
               <h4 className="font-medium text-gray-900">{post.title}</h4>
               <p className="text-sm text-gray-500">{post.platform}</p>
             </div>
-            <span className="text-green-600 text-sm font-medium">{post.roi} ROI</span>
+            <span className={`text-sm font-medium ${formatROI(post.roi)}`}>
+              {post.roi.toFixed(1)}x ROI
+            </span>
           </div>
-          
+
           <div className="grid grid-cols-3 gap-4 mt-3">
             <div className="flex items-center">
               <TrendingUp size={16} className="text-blue-500 mr-2" />
               <div>
                 <p className="text-xs text-gray-500">Reach</p>
-                <p className="font-medium">{post.reach}</p>
+                <p className="font-medium">{formatNumber(post.reach)}</p>
               </div>
             </div>
             <div className="flex items-center">
               <Users size={16} className="text-purple-500 mr-2" />
               <div>
                 <p className="text-xs text-gray-500">Engagement</p>
-                <p className="font-medium">{post.engagement}</p>
+                <p className="font-medium">{formatNumber(post.engagement)}</p>
               </div>
             </div>
             <div className="flex items-center">
               <DollarSign size={16} className="text-green-500 mr-2" />
               <div>
                 <p className="text-xs text-gray-500">ROI</p>
-                <p className="font-medium">{post.roi}</p>
+                <p className="font-medium">{post.roi.toFixed(1)}x</p>
               </div>
             </div>
           </div>

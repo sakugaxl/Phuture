@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   LineChart,
   Line,
@@ -34,6 +33,7 @@ export default function FinancialChart({ data }: FinancialChartProps) {
         <Line
           type="monotone"
           dataKey="income"
+          name="Income"
           stroke="#10B981"
           strokeWidth={2}
           dot={false}
@@ -41,6 +41,7 @@ export default function FinancialChart({ data }: FinancialChartProps) {
         <Line
           type="monotone"
           dataKey="expenses"
+          name="Expenses"
           stroke="#EF4444"
           strokeWidth={2}
           dot={false}
@@ -48,6 +49,7 @@ export default function FinancialChart({ data }: FinancialChartProps) {
         <Line
           type="monotone"
           dataKey="profit"
+          name="Profit"
           stroke="#3B82F6"
           strokeWidth={2}
           dot={false}

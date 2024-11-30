@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
-import { TrendingUp, Target, Users, Calendar, Filter, BarChart3, DollarSign, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  TrendingUp, 
+  Target, 
+  Users, 
+  Calendar, 
+  Filter, 
+  BarChart3, 
+  DollarSign, 
+  ChevronDown, 
+  ChevronUp 
+} from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import CampaignList from '../components/marketing/CampaignList';
 import MarketingFilters from '../components/marketing/MarketingFilters';
 import PerformanceChart from '../components/marketing/PerformanceChart';
 import TopPerformers from '../components/marketing/TopPerformers';
+import { fetchMarketingData } from '../services/api';
 
 export default function Marketing() {
   const [timeframe, setTimeframe] = useState('monthly');
@@ -14,6 +25,40 @@ export default function Marketing() {
   const [isTopPerformersVisible, setIsTopPerformersVisible] = useState(true);
   const [isActiveCampaignsVisible, setIsActiveCampaignsVisible] = useState(true);
 
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchMarketingData(timeframe);
+        setDashboardData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching marketing data:', err);
+        setError('Failed to load marketing data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [timeframe]);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading marketing data...</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="sticky top-0 z-10 bg-gray-50 pb-4">
@@ -21,12 +66,12 @@ export default function Marketing() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Marketing Campaigns</h1>
-              <p className="mt-2 text-gray-600">Manage, track, and optimize your marketing campaigns across all platforms</p>
+              <p className="mt-2 text-gray-600">
+                Manage, track, and optimize your marketing campaigns across all platforms.
+              </p>
             </div>
             <div className="mt-4 sm:mt-0">
-              <button className="btn btn-primary">
-                Create Campaign
-              </button>
+              <button className="btn btn-primary">Create Campaign</button>
             </div>
           </div>
         </header>
@@ -44,27 +89,27 @@ export default function Marketing() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardCard
           title="Active Campaigns"
-          value="8"
+          value={dashboardData.activeCampaigns}
           icon={<TrendingUp className="text-blue-500" />}
-          trend={{ value: 5, isPositive: true }}
+          trend={{ value: dashboardData.trends.campaigns.value, isPositive: dashboardData.trends.campaigns.isPositive }}
         />
         <DashboardCard
           title="Total Reach"
-          value="45.2K"
+          value={dashboardData.totalReach}
           icon={<Target className="text-purple-500" />}
-          trend={{ value: 12.3, isPositive: true }}
+          trend={{ value: dashboardData.trends.reach.value, isPositive: dashboardData.trends.reach.isPositive }}
         />
         <DashboardCard
           title="Conversions"
-          value="1.2K"
+          value={dashboardData.conversions}
           icon={<Users className="text-green-500" />}
-          trend={{ value: 8.7, isPositive: true }}
+          trend={{ value: dashboardData.trends.conversions.value, isPositive: dashboardData.trends.conversions.isPositive }}
         />
         <DashboardCard
           title="Ad Spend"
-          value="R 12,450"
+          value={dashboardData.adSpend}
           icon={<DollarSign className="text-orange-500" />}
-          trend={{ value: 3.2, isPositive: false }}
+          trend={{ value: dashboardData.trends.adSpend.value, isPositive: dashboardData.trends.adSpend.isPositive }}
         />
       </div>
 

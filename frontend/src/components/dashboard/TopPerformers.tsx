@@ -1,4 +1,3 @@
-import React from 'react';
 import { TrendingUp, Users, DollarSign } from 'lucide-react';
 
 const topPosts = [
@@ -17,7 +16,7 @@ const topPosts = [
     reach: '12.5K',
     engagement: '1.9K',
     roi: '2.8x',
-  }
+  },
 ];
 
 export default function TopPerformers() {
@@ -35,7 +34,7 @@ export default function TopPerformers() {
             </div>
             <span className="text-green-600 text-sm font-medium">{post.roi} ROI</span>
           </div>
-          
+
           <div className="grid grid-cols-3 gap-4 mt-3">
             <div className="flex items-center">
               <TrendingUp size={16} className="text-blue-500 mr-2" />

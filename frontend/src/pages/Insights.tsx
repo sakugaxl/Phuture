@@ -1,59 +1,61 @@
-import React, { useState } from 'react';
-import { Brain, TrendingUp, Users, DollarSign, BarChart3, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { 
+  Brain, 
+  TrendingUp, 
+  Users, 
+  DollarSign, 
+  BarChart3, 
+  MessageSquare, 
+  ChevronDown, 
+  ChevronUp 
+} from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import InsightCard from '../components/insights/InsightCard';
 import PerformanceChart from '../components/insights/PerformanceChart';
-
-const insights = [
-  {
-    category: 'Marketing',
-    title: 'Optimize Facebook Ad Spend',
-    description: 'Increase ROI by reallocating budget to better-performing demographics',
-    metrics: [
-      { label: 'Current CTR', value: '2.3%' },
-      { label: 'Potential CTR', value: '3.5%' },
-      { label: 'Estimated Savings', value: 'R 2,500' }
-    ],
-    action: 'View Optimization Plan',
-    icon: Brain,
-    color: 'purple'
-  },
-  {
-    category: 'Growth',
-    title: 'Market Expansion Opportunity',
-    description: 'High engagement detected in Gauteng region',
-    metrics: [
-      { label: 'Market Size', value: 'R 2.5M' },
-      { label: 'Growth Rate', value: '15%' },
-      { label: 'Competition', value: 'Low' }
-    ],
-    action: 'Explore Market',
-    icon: TrendingUp,
-    color: 'blue'
-  },
-  {
-    category: 'Customer Behavior',
-    title: 'Peak Engagement Times',
-    description: 'Schedule posts at optimal times for maximum reach',
-    metrics: [
-      { label: 'Best Time', value: '10:00 AM' },
-      { label: 'Best Days', value: 'Tue, Thu' },
-      { label: 'Engagement ↑', value: '45%' }
-    ],
-    action: 'Update Schedule',
-    icon: Users,
-    color: 'green'
-  }
-];
+import { fetchInsightsData } from '../services/api';
 
 export default function Insights() {
+  const [insights, setInsights] = useState([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
   const [isMarketingVisible, setIsMarketingVisible] = useState(true);
   const [isGrowthVisible, setIsGrowthVisible] = useState(true);
   const [isCustomerVisible, setIsCustomerVisible] = useState(true);
 
-  const marketingInsights = insights.filter(insight => insight.category === 'Marketing');
-  const growthInsights = insights.filter(insight => insight.category === 'Growth');
-  const customerInsights = insights.filter(insight => insight.category === 'Customer Behavior');
+  useEffect(() => {
+    const loadInsights = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchInsightsData();
+        setInsights(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching insights:', err);
+        setError('Unable to load insights data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInsights();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading insights...</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
+
+  const marketingInsights = insights.filter((insight) => insight.category === 'Marketing');
+  const growthInsights = insights.filter((insight) => insight.category === 'Growth');
+  const customerInsights = insights.filter((insight) => insight.category === 'Customer Behavior');
 
   return (
     <>

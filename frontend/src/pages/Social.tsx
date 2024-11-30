@@ -2,7 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Share2, Users, MessageSquare, ChevronDown, ChevronUp, Calendar, BarChart3 } from 'lucide-react';
+import {
+  Share2,
+  Users,
+  MessageSquare,
+  ChevronDown,
+  ChevronUp,
+  Calendar,
+  BarChart3,
+} from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import SocialLoginPanel from '../components/SocialLoginPanel';
 import SocialMetrics from '../components/social/SocialMetrics';
@@ -15,17 +23,23 @@ export default function Social() {
   const [isCalendarVisible, setIsCalendarVisible] = useState(true);
   const [isEngagementVisible, setIsEngagementVisible] = useState(true);
   const [isAudienceVisible, setIsAudienceVisible] = useState(true);
-  const [metrics, setMetrics] = useState({ followerCount: null, reach: null, impressions: null });
+  const [metrics, setMetrics] = useState({
+    followerCount: null,
+    reach: null,
+    impressions: null,
+  });
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
         const response = await axios.get('/auth/instagram/metrics', {
-          params: { userId: 'currentUserId' } // Replace with actual user ID logic
+          params: { userId: 'currentUserId' }, // Replace with actual user ID logic
         });
         setMetrics(response.data);
       } catch (error) {
         console.error('Error fetching Instagram metrics:', error);
+        setError(true);
       }
     };
 
@@ -36,82 +50,104 @@ export default function Social() {
     <>
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Social Media Management</h1>
-        <p className="mt-2 text-gray-600">Manage all your social media accounts in one place</p>
+        <p className="mt-2 text-gray-600">
+          Manage all your social media accounts in one place.
+        </p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <DashboardCard
-          title="Total Followers"
-          value={metrics.followerCount !== null ? `${metrics.followerCount}` : 'Loading...'}
-          icon={<Users className="text-blue-500" />}
-          trend={{ value: 5.2, isPositive: true }}
-        />
-        <DashboardCard
-          title="Reach"
-          value={metrics.reach !== null ? `${metrics.reach}` : 'Loading...'}
-          icon={<Share2 className="text-purple-500" />}
-          trend={{ value: 0.5, isPositive: true }}
-        />
-        <DashboardCard
-          title="Impressions"
-          value={metrics.impressions !== null ? `${metrics.impressions}` : 'Loading...'}
-          icon={<MessageSquare className="text-green-500" />}
-          trend={{ value: 12, isPositive: true }}
-        />
+        {error ? (
+          <p className="text-sm text-red-600 col-span-3">
+            Unable to fetch metrics. Please try again later.
+          </p>
+        ) : (
+          <>
+            <DashboardCard
+              title="Total Followers"
+              value={metrics.followerCount !== null ? `${metrics.followerCount}` : 'Loading...'}
+              icon={<Users className="text-blue-500" />}
+              trend={{ value: 5.2, isPositive: true }}
+            />
+            <DashboardCard
+              title="Reach"
+              value={metrics.reach !== null ? `${metrics.reach}` : 'Loading...'}
+              icon={<Share2 className="text-purple-500" />}
+              trend={{ value: 0.5, isPositive: true }}
+            />
+            <DashboardCard
+              title="Impressions"
+              value={metrics.impressions !== null ? `${metrics.impressions}` : 'Loading...'}
+              icon={<MessageSquare className="text-green-500" />}
+              trend={{ value: 12, isPositive: true }}
+            />
+          </>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         <div className="lg:col-span-2">
           {/* Performance Metrics Section */}
           <div className="bg-white rounded-xl shadow-sm mb-6">
-            <div 
+            <div
               className="p-6 border-b border-gray-100 flex items-center justify-between cursor-pointer"
               onClick={() => setIsMetricsVisible(!isMetricsVisible)}
             >
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Performance Metrics</h3>
-                <p className="text-sm text-gray-500">Track your social media performance</p>
+                <p className="text-sm text-gray-500">Track your social media performance.</p>
               </div>
               {isMetricsVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
-            <div className={`transition-all duration-300 ${isMetricsVisible ? 'p-6' : 'h-0 overflow-hidden'}`}>
+            <div
+              className={`transition-all duration-300 ${
+                isMetricsVisible ? 'p-6' : 'h-0 overflow-hidden'
+              }`}
+            >
               <SocialMetrics />
             </div>
           </div>
 
           {/* Audience Insights Section */}
           <div className="bg-white rounded-xl shadow-sm mb-6">
-            <div 
+            <div
               className="p-6 border-b border-gray-100 flex items-center justify-between cursor-pointer"
               onClick={() => setIsAudienceVisible(!isAudienceVisible)}
             >
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Audience Insights</h3>
-                <p className="text-sm text-gray-500">Understand your audience demographics</p>
+                <p className="text-sm text-gray-500">Understand your audience demographics.</p>
               </div>
               {isAudienceVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
-            <div className={`transition-all duration-300 ${isAudienceVisible ? 'p-6' : 'h-0 overflow-hidden'}`}>
+            <div
+              className={`transition-all duration-300 ${
+                isAudienceVisible ? 'p-6' : 'h-0 overflow-hidden'
+              }`}
+            >
               <AudienceInsights />
             </div>
           </div>
 
           {/* Content Calendar Section */}
           <div className="bg-white rounded-xl shadow-sm">
-            <div 
+            <div
               className="p-6 border-b border-gray-100 flex items-center justify-between cursor-pointer"
               onClick={() => setIsCalendarVisible(!isCalendarVisible)}
             >
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Content Calendar</h3>
-                <p className="text-sm text-gray-500">Schedule and manage your content</p>
+                <p className="text-sm text-gray-500">Schedule and manage your content.</p>
               </div>
               <div className="flex items-center space-x-4">
                 <button className="btn btn-primary">Create Post</button>
                 {isCalendarVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
               </div>
             </div>
-            <div className={`transition-all duration-300 ${isCalendarVisible ? 'p-6' : 'h-0 overflow-hidden'}`}>
+            <div
+              className={`transition-all duration-300 ${
+                isCalendarVisible ? 'p-6' : 'h-0 overflow-hidden'
+              }`}
+            >
               <ContentCalendar />
             </div>
           </div>
@@ -122,17 +158,21 @@ export default function Social() {
 
           {/* Engagement Hub Section */}
           <div className="bg-white rounded-xl shadow-sm">
-            <div 
+            <div
               className="p-6 border-b border-gray-100 flex items-center justify-between cursor-pointer"
               onClick={() => setIsEngagementVisible(!isEngagementVisible)}
             >
               <div>
                 <h3 className="text-lg font-semibold text-gray-900">Engagement Hub</h3>
-                <p className="text-sm text-gray-500">Monitor and respond to interactions</p>
+                <p className="text-sm text-gray-500">Monitor and respond to interactions.</p>
               </div>
               {isEngagementVisible ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
             </div>
-            <div className={`transition-all duration-300 ${isEngagementVisible ? 'p-6' : 'h-0 overflow-hidden'}`}>
+            <div
+              className={`transition-all duration-300 ${
+                isEngagementVisible ? 'p-6' : 'h-0 overflow-hidden'
+              }`}
+            >
               <EngagementHub />
             </div>
           </div>

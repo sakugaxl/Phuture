@@ -1,29 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, CreditCard, ArrowUpRight } from 'lucide-react';
 import DashboardCard from '../components/DashboardCard';
 import TimeframeFilter from '../components/TimeframeFilter';
 import FinancialChart from '../components/FinancialChart';
 import ExpensesPieChart from '../components/ExpensesPieChart';
-
-// Sample data - replace with actual API calls
-const financialData = [
-  { date: 'Jan', income: 150000, expenses: 45000, profit: 105000 },
-  { date: 'Feb', income: 165000, expenses: 48000, profit: 117000 },
-  { date: 'Mar', income: 180000, expenses: 52000, profit: 128000 },
-  { date: 'Apr', income: 175000, expenses: 49000, profit: 126000 },
-  { date: 'May', income: 190000, expenses: 55000, profit: 135000 },
-  { date: 'Jun', income: 205000, expenses: 58000, profit: 147000 },
-];
-
-const expensesData = [
-  { name: 'Marketing', value: 25000, color: '#3B82F6' },
-  { name: 'Operations', value: 15000, color: '#10B981' },
-  { name: 'Salaries', value: 35000, color: '#F59E0B' },
-  { name: 'Software', value: 8000, color: '#6366F1' },
-];
+import { fetchFinancialData } from '../services/api';
 
 export default function Financial() {
   const [timeframe, setTimeframe] = useState('monthly');
+  const [financialData, setFinancialData] = useState<any[]>([]);
+  const [expensesData, setExpensesData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadFinancialData = async () => {
+      try {
+        setLoading(true);
+        const { financial, expenses } = await fetchFinancialData(timeframe);
+        setFinancialData(financial);
+        setExpensesData(expenses);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to fetch financial data:', err);
+        setError('Unable to load financial data. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFinancialData();
+  }, [timeframe]);
+
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading financial data...</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-600">
+        <p>{error}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -40,19 +59,19 @@ export default function Financial() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <DashboardCard
           title="Monthly Revenue"
-          value="R 125,430"
+          value={`R ${financialData.reduce((acc, item) => acc + item.income, 0).toLocaleString()}`}
           icon={<DollarSign className="text-green-500" />}
           trend={{ value: 12.5, isPositive: true }}
         />
         <DashboardCard
           title="Monthly Expenses"
-          value="R 45,230"
+          value={`R ${financialData.reduce((acc, item) => acc + item.expenses, 0).toLocaleString()}`}
           icon={<CreditCard className="text-red-500" />}
           trend={{ value: 3.2, isPositive: false }}
         />
         <DashboardCard
           title="Net Profit"
-          value="R 80,200"
+          value={`R ${financialData.reduce((acc, item) => acc + item.profit, 0).toLocaleString()}`}
           icon={<TrendingUp className="text-blue-500" />}
           trend={{ value: 15.8, isPositive: true }}
         />
@@ -82,13 +101,13 @@ export default function Financial() {
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Transactions</h3>
           <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-gray-100">
+            {financialData.slice(-3).map((item, index) => (
+              <div key={index} className="flex items-center justify-between py-2 border-b border-gray-100">
                 <div>
-                  <p className="font-medium text-gray-900">Software License</p>
-                  <p className="text-sm text-gray-500">March 15, 2024</p>
+                  <p className="font-medium text-gray-900">Transaction {index + 1}</p>
+                  <p className="text-sm text-gray-500">{item.date}</p>
                 </div>
-                <span className="text-red-600">- R 2,500</span>
+                <span className="text-red-600">- R {item.expenses.toLocaleString()}</span>
               </div>
             ))}
           </div>

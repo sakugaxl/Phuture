@@ -1,5 +1,4 @@
-import React from 'react';
-import { Brain, TrendingUp, Clock, Users } from 'lucide-react';
+import { Brain, Clock, Users } from 'lucide-react';
 
 const recommendations = [
   {
@@ -7,28 +6,28 @@ const recommendations = [
     title: 'Optimize Ad Spend',
     description: 'Increase Facebook ad budget by 20% for better reach',
     impact: 'Potential 15% ROI increase',
-    color: 'purple'
+    color: 'purple',
   },
   {
     icon: Clock,
     title: 'Best Posting Time',
     description: 'Schedule posts between 10 AM - 2 PM SAST',
     impact: '25% higher engagement',
-    color: 'blue'
+    color: 'blue',
   },
   {
     icon: Users,
     title: 'Target Audience',
     description: 'Focus on 25-34 age group in Gauteng',
     impact: '30% more conversions',
-    color: 'green'
-  }
+    color: 'green',
+  },
 ];
 
-const colorClasses = {
+const colorClasses: Record<string, string> = {
   purple: 'bg-purple-50 text-purple-600',
   blue: 'bg-blue-50 text-blue-600',
-  green: 'bg-green-50 text-green-600'
+  green: 'bg-green-50 text-green-600',
 };
 
 export default function RecommendationsPanel() {

@@ -9,7 +9,7 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": true, // Retain noEmit here for the main config
     "jsx": "react-jsx",
     "strict": true,
     "noUnusedLocals": true,

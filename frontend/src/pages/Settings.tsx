@@ -1,15 +1,13 @@
-// Settings.tsx
-
 import React from 'react';
-import { Settings as SettingsIcon, Bell, Link, Palette } from 'lucide-react';
+import { Settings as SettingsIcon, Link } from 'lucide-react';
 import ProfileSection from '../components/settings/ProfileSection';
 import IntegrationsSection from '../components/settings/IntegrationsSection';
 
 const settingsTabs = [
   { id: 'profile', icon: SettingsIcon, label: 'Profile' },
-  { id: 'notifications', icon: Bell, label: 'Notifications' },
   { id: 'integrations', icon: Link, label: 'Integrations' },
-  { id: 'appearance', icon: Palette, label: 'Appearance' },
+  // { id: 'notifications', icon: Bell, label: 'Notifications' },
+  // { id: 'appearance', icon: Palette, label: 'Appearance' },
 ];
 
 export default function Settings() {
@@ -42,19 +40,22 @@ export default function Settings() {
 
         <div className="flex-1">
           {activeTab === 'profile' && <ProfileSection />}
+          {activeTab === 'integrations' && <IntegrationsSection />}
+          {/* Temporarily hidden sections */}
+          {/* 
           {activeTab === 'notifications' && (
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900">Notification Settings</h3>
               <p className="mt-2 text-gray-600">Configure your notification preferences</p>
             </div>
           )}
-          {activeTab === 'integrations' && <IntegrationsSection />}
           {activeTab === 'appearance' && (
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900">Appearance</h3>
               <p className="mt-2 text-gray-600">Customize your dashboard appearance</p>
             </div>
           )}
+          */}
         </div>
       </div>
     </>

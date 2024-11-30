@@ -1,4 +1,3 @@
-import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 interface ExpenseData {
@@ -35,7 +34,7 @@ export default function ExpensesPieChart({ data }: ExpensesPieChartProps) {
           />
         </PieChart>
       </ResponsiveContainer>
-      
+
       <div className="mt-4 grid grid-cols-2 gap-2">
         {data.map((item) => (
           <div key={item.name} className="flex items-center">
