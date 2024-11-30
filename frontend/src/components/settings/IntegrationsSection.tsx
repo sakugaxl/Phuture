@@ -23,27 +23,27 @@ function openAuthPopup(url: string) {
 // Integration connection functions
 const handleInstagramConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/instagram"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/instagram"
   );
 const handleFacebookConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/facebook"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/facebook"
   );
 const handleLinkedInConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/linkedin"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/linkedin"
   );
 const handleTwitterConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/twitter"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/twitter"
   );
 const handleTikTokConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/tiktok"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/tiktok"
   );
 const handleGoogleAdSenseConnect = () =>
   openAuthPopup(
-    "https://phuturesync-8aoufcrk3-sakugaxls-projects.vercel.app/auth/googleAdsense"
+    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/googleAdsense"
   );
 
 // Initial integrations data
