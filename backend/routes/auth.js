@@ -74,11 +74,11 @@ router.get("/googleAdsense/callback", async (req, res) => {
       { merge: true }
     );
 
-    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=googleAdsense`);
+    res.redirect(`${FRONTEND_URL}/auth-success?platform=googleAdsense`);
   } catch (error) {
     console.error("Error connecting to Google AdSense:", error.message);
     res.redirect(
-      `${FRONTEND_URL}/settings?status=error&platform=googleAdsense&message=${encodeURIComponent(
+      `${FRONTEND_URL}/auth-failure?platform=googleAdsense&message=${encodeURIComponent(
         error.message
       )}`
     );
@@ -142,11 +142,11 @@ router.get("/facebook/callback", async (req, res) => {
       { merge: true }
     );
 
-    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=facebook`);
+    res.redirect(`${FRONTEND_URL}/auth-success?platform=facebook`);
   } catch (error) {
     console.error("Error connecting to Facebook:", error.message);
     res.redirect(
-      `${FRONTEND_URL}/settings?status=error&platform=facebook&message=${encodeURIComponent(
+      `${FRONTEND_URL}/auth-failure?platform=facebook&message=${encodeURIComponent(
         error.message
       )}`
     );
@@ -187,18 +187,15 @@ router.get("/instagram/callback", async (req, res) => {
       { merge: true }
     );
 
-    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=instagram`);
+    res.redirect(`${FRONTEND_URL}/auth-success?platform=instagram`);
   } catch (error) {
     console.error("Error connecting to Instagram:", error.message);
     res.redirect(
-      `${FRONTEND_URL}/settings?status=error&platform=instagram&message=${encodeURIComponent(
+      `${FRONTEND_URL}/auth-failure?platform=instagram&message=${encodeURIComponent(
         error.message
       )}`
     );
   }
 });
-
-// LinkedIn, Twitter, TikTok can follow the same structure.
-// Add corresponding routes here...
 
 module.exports = router;

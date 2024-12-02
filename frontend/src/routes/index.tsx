@@ -4,6 +4,8 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
 
 // Lazy load pages
+const AuthSuccess = React.lazy(() => import("../pages/AuthSuccess"));
+const AuthFailure = React.lazy(() => import("../pages/AuthFailure"));
 // const Dashboard = React.lazy(() => import('../pages/Dashboard'));
 // const Financial = React.lazy(() => import('../pages/Financial'));
 // const Marketing = React.lazy(() => import('../pages/Marketing'));
@@ -25,18 +27,23 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth-success" element={<AuthSuccess />} />
+        <Route path="/auth-failure" element={<AuthFailure />} />
+        <Route path="/" element={<Navigate to="/settings" replace />} />
+        <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+        {/* <Route path="/signup" element={<Signup />} />
+        <Route path="/login" element={<Login />} />
         <Route
           path="/"
           element={<Navigate to="/settings" replace />} // Redirect root path to Settings
         />
-        {/* Temporarily disable other routes */}
-        {/* <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
         <Route path="/financial" element={<ProtectedRoute><Financial /></ProtectedRoute>} />
         <Route path="/marketing" element={<ProtectedRoute><Marketing /></ProtectedRoute>} />
         <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
-        <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} /> */}
+        <Route path="/social" element={<ProtectedRoute><Social /></ProtectedRoute>} />
         <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-        {/* <Route path="/security" element={<ProtectedRoute><Security /></ProtectedRoute>} /> */}
+        <Route path="/security" element={<ProtectedRoute><Security /></ProtectedRoute>} /> */}
       </Routes>
     </Suspense>
   );
