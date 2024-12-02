@@ -7,88 +7,87 @@ import {
   Settings2,
   CheckCircle2,
   XCircle,
+  BarChart,
 } from "lucide-react";
 import { FaTiktok } from "react-icons/fa";
-import { BarChart } from "lucide-react";
 import axios from "axios";
 
 // Popup window function for opening authentication URLs
-function openAuthPopup(url: string) {
+function openAuthPopup(url: string, platform: string, onSuccess: () => void, onError: (err: any) => void) {
   const popup = window.open(url, "_blank", "width=600,height=600");
+
   if (popup) {
-    popup.focus();
+    const interval = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(interval);
+
+        // Check the connection status after the popup is closed
+        axios
+          .get(`${import.meta.env.VITE_API_URL}/auth/${platform}/status`, {
+            params: { userId: "currentUserId" }, // Adjust dynamically
+          })
+          .then((response) => {
+            if (response.data.isConnected) {
+              onSuccess();
+            } else {
+              onError("Failed to connect. Please try again.");
+            }
+          })
+          .catch((err) => onError(err.message || "An error occurred."));
+      }
+    }, 500);
+  } else {
+    onError("Failed to open popup. Please check your browser settings.");
   }
 }
 
 // Integration connection functions
-const handleInstagramConnect = () =>
+const handleConnect = (platform: string, connectUrl: string) => {
   openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/instagram"
+    connectUrl,
+    platform,
+    () => alert(`${platform} connected successfully!`),
+    (err) => alert(`Error connecting ${platform}: ${err}`)
   );
-const handleFacebookConnect = () =>
-  openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/facebook"
-  );
-const handleLinkedInConnect = () =>
-  openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/linkedin"
-  );
-const handleTwitterConnect = () =>
-  openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/twitter"
-  );
-const handleTikTokConnect = () =>
-  openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/tiktok"
-  );
-const handleGoogleAdSenseConnect = () =>
-  openAuthPopup(
-    "https://phuturesync-panel-m9b510nz4-sakugacodeworks.vercel.app/auth/googleAdsense"
-  );
+};
 
 // Initial integrations data
 const integrations = [
   {
     name: "Facebook",
     icon: Facebook,
-    status: "not-connected",
     color: "blue",
-    connect: handleFacebookConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/facebook`,
   },
   {
     name: "Instagram",
     icon: Instagram,
-    status: "not-connected",
     color: "blue",
-    connect: handleInstagramConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/instagram`,
   },
   {
     name: "LinkedIn",
     icon: Linkedin,
-    status: "not-connected",
     color: "blue",
-    connect: handleLinkedInConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/linkedin`,
   },
   {
     name: "Twitter",
     icon: Twitter,
-    status: "not-connected",
     color: "blue",
-    connect: handleTwitterConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/twitter`,
   },
   {
     name: "TikTok",
     icon: FaTiktok,
-    status: "not-connected",
     color: "blue",
-    connect: handleTikTokConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/tiktok`,
   },
   {
     name: "Google AdSense",
     icon: BarChart,
-    status: "not-connected",
     color: "green",
-    connect: handleGoogleAdSenseConnect,
+    connectUrl: `${import.meta.env.VITE_API_URL}/auth/googleAdsense`,
   },
 ];
 
@@ -113,9 +112,9 @@ export default function IntegrationsSection() {
     const checkStatus = async (platform: string) => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/auth/${platform}/status`,
+          `${import.meta.env.VITE_API_URL}/auth/${platform}/status`,
           {
-            params: { userId: "currentUserId" }, // Adjust as necessary to fetch the userId dynamically
+            params: { userId: "currentUserId" }, // Adjust dynamically
           }
         );
         if (response.data.isConnected) {
@@ -126,38 +125,27 @@ export default function IntegrationsSection() {
       }
     };
 
-    // Check connection status for each platform
-    [
-      "facebook",
-      "instagram",
-      "linkedin",
-      "twitter",
-      "tiktok",
-      "googleAdsense",
-    ].forEach((platform) => checkStatus(platform));
+    integrations.forEach(({ name }) =>
+      checkStatus(name.toLowerCase().replace(" ", ""))
+    );
   }, []);
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Integrations</h3>
       <div className="grid gap-4">
-        {integrations.map((integration) => {
-          const isConnected =
-            statuses[integration.name.toLowerCase().replace(" ", "")] ===
-            "connected";
+        {integrations.map(({ name, icon: Icon, color, connectUrl }) => {
+          const platform = name.toLowerCase().replace(" ", "");
+          const isConnected = statuses[platform] === "connected";
 
           return (
             <div
-              key={integration.name}
+              key={name}
               className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
             >
               <div className="flex items-center">
-                <integration.icon
-                  className={`h-5 w-5 mr-3 text-${integration.color}-500`}
-                />
-                <span className="font-medium text-gray-900">
-                  {integration.name}
-                </span>
+                <Icon className={`h-5 w-5 mr-3 text-${color}-500`} />
+                <span className="font-medium text-gray-900">{name}</span>
               </div>
 
               <div className="flex items-center">
@@ -181,8 +169,8 @@ export default function IntegrationsSection() {
 
                 {!isConnected && (
                   <button
-                    onClick={integration.connect}
-                    className={`bg-${integration.color}-500 text-white px-4 py-2 rounded-lg hover:bg-${integration.color}-600 transition-colors`}
+                    onClick={() => handleConnect(platform, connectUrl)}
+                    className={`bg-${color}-500 text-white px-4 py-2 rounded-lg hover:bg-${color}-600 transition-colors`}
                   >
                     Connect
                   </button>

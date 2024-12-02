@@ -2,7 +2,6 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: './', // Ensures correct asset paths in production
   plugins: [react()],
   build: {
     target: 'esnext',
@@ -19,6 +18,7 @@ export default defineConfig({
     },
     chunkSizeWarningLimit: 1000
   },
+  base: '/', // Ensures correct base path
   server: {
     port: 3000,
     proxy: {

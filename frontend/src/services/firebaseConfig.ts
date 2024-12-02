@@ -1,6 +1,6 @@
-// firebaseConfig.ts
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -14,4 +14,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
-export { app, analytics };
+const auth = getAuth(app); // Added auth initialization
+
+export { app, analytics, auth };

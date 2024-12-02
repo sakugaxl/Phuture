@@ -3,7 +3,7 @@ const axios = require("axios");
 const router = express.Router();
 const { db } = require("../utils/firebase");
 
-// Helper to handle long-lived tokens
+// Helper to handle long-lived tokens for Facebook
 async function exchangeForLongLivedToken(accessToken, appId, appSecret) {
   try {
     const response = await axios.get(
@@ -19,12 +19,12 @@ async function exchangeForLongLivedToken(accessToken, appId, appSecret) {
     );
     return response.data.access_token;
   } catch (error) {
-    console.error("Error exchanging for long-lived token:", error.response?.data || error.message);
+    console.error("Error exchanging for long-lived token:", error.message);
     throw error;
   }
 }
 
-// Google AdSense OAuth Route
+// Google AdSense OAuth Routes
 router.get("/googleAdsense", (req, res) => {
   const { GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI } = process.env;
   const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_REDIRECT_URI}&scope=https://www.googleapis.com/auth/adsense.readonly&response_type=code`;
@@ -33,30 +33,32 @@ router.get("/googleAdsense", (req, res) => {
 
 router.get("/googleAdsense/callback", async (req, res) => {
   const { code } = req.query;
-  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI } = process.env;
+  const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI, FRONTEND_URL } = process.env;
 
   try {
-    // Step 1: Exchange the code for an access token
-    const tokenResponse = await axios.post(`https://oauth2.googleapis.com/token`, {
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
-      grant_type: "authorization_code",
-      redirect_uri: GOOGLE_REDIRECT_URI,
-      code,
-    });
+    const tokenResponse = await axios.post(
+      `https://oauth2.googleapis.com/token`,
+      {
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        redirect_uri: GOOGLE_REDIRECT_URI,
+        code,
+      }
+    );
 
     const { access_token } = tokenResponse.data;
 
-    // Step 2: Fetch AdSense accounts
-    const accountsResponse = await axios.get(`https://adsense.googleapis.com/v2/accounts`, {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-      },
-    });
+    const accountsResponse = await axios.get(
+      `https://adsense.googleapis.com/v2/accounts`,
+      {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }
+    );
 
     const accounts = accountsResponse.data.accounts || [];
-
-    // Step 3: Store access token and accounts in Firestore
     const userId = req.query.userId || "testUserId";
 
     await db.collection("users").doc(userId).set(
@@ -72,15 +74,18 @@ router.get("/googleAdsense/callback", async (req, res) => {
       { merge: true }
     );
 
-    // Redirect back to the frontend with a success parameter
-    res.redirect("/settings?connected=googleAdsense");
+    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=googleAdsense`);
   } catch (error) {
-    console.error("Error connecting to Google AdSense:", error.response?.data || error.message);
-    res.status(500).send("Error connecting to Google AdSense");
+    console.error("Error connecting to Google AdSense:", error.message);
+    res.redirect(
+      `${FRONTEND_URL}/settings?status=error&platform=googleAdsense&message=${encodeURIComponent(
+        error.message
+      )}`
+    );
   }
 });
 
-// Facebook OAuth Route
+// Facebook OAuth Routes
 router.get("/facebook", (req, res) => {
   const { FACEBOOK_APP_ID, FACEBOOK_REDIRECT_URI } = process.env;
   const authUrl = `https://www.facebook.com/v14.0/dialog/oauth?client_id=${FACEBOOK_APP_ID}&redirect_uri=${FACEBOOK_REDIRECT_URI}&scope=pages_manage_ads,pages_manage_metadata,pages_read_engagement,pages_read_user_content,ads_read`;
@@ -89,7 +94,7 @@ router.get("/facebook", (req, res) => {
 
 router.get("/facebook/callback", async (req, res) => {
   const { code } = req.query;
-  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_REDIRECT_URI } = process.env;
+  const { FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_REDIRECT_URI, FRONTEND_URL } = process.env;
 
   try {
     const tokenResponse = await axios.get(
@@ -137,14 +142,18 @@ router.get("/facebook/callback", async (req, res) => {
       { merge: true }
     );
 
-    res.redirect("/settings?connected=facebook");
+    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=facebook`);
   } catch (error) {
-    console.error("Error connecting to Facebook:", error.response?.data || error.message);
-    res.status(500).send("Error connecting to Facebook");
+    console.error("Error connecting to Facebook:", error.message);
+    res.redirect(
+      `${FRONTEND_URL}/settings?status=error&platform=facebook&message=${encodeURIComponent(
+        error.message
+      )}`
+    );
   }
 });
 
-// Instagram OAuth Route
+// Instagram OAuth Routes
 router.get("/instagram", (req, res) => {
   const { INSTAGRAM_APP_ID, INSTAGRAM_REDIRECT_URI } = process.env;
   const authUrl = `https://api.instagram.com/oauth/authorize?client_id=${INSTAGRAM_APP_ID}&redirect_uri=${INSTAGRAM_REDIRECT_URI}&scope=user_profile,user_media&response_type=code`;
@@ -153,7 +162,8 @@ router.get("/instagram", (req, res) => {
 
 router.get("/instagram/callback", async (req, res) => {
   const { code } = req.query;
-  const { INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI } = process.env;
+  const { INSTAGRAM_APP_ID, INSTAGRAM_APP_SECRET, INSTAGRAM_REDIRECT_URI, FRONTEND_URL } =
+    process.env;
 
   try {
     const tokenResponse = await axios.post(`https://api.instagram.com/oauth/access_token`, {
@@ -177,11 +187,18 @@ router.get("/instagram/callback", async (req, res) => {
       { merge: true }
     );
 
-    res.redirect("/settings?connected=instagram");
+    res.redirect(`${FRONTEND_URL}/settings?status=success&platform=instagram`);
   } catch (error) {
-    console.error("Error connecting to Instagram:", error.response?.data || error.message);
-    res.status(500).send("Error connecting to Instagram");
+    console.error("Error connecting to Instagram:", error.message);
+    res.redirect(
+      `${FRONTEND_URL}/settings?status=error&platform=instagram&message=${encodeURIComponent(
+        error.message
+      )}`
+    );
   }
 });
+
+// LinkedIn, Twitter, TikTok can follow the same structure.
+// Add corresponding routes here...
 
 module.exports = router;
